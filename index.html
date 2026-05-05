@@ -3,124 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>サービス案内</title>
+<title>インフォメーション</title>
 <style>
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;
+  background:#f4f7fb;
   color:#222;
-  background:#f7f9fc;
 }
 .header{
-  padding:20px 24px;
   background:#fff;
-  border-bottom:1px solid #e8edf3;
+  padding:22px 28px;
+  border-bottom:1px solid #e6ebf1;
 }
 .logo{
   font-size:18px;
-  font-weight:600;
-  color:#24569c;
+  font-weight:700;
+  color:#2b5f9e;
+}
+.main{
+  max-width:1000px;
+  margin:0 auto;
+  padding:64px 24px;
 }
 .hero{
-  max-width:960px;
-  margin:0 auto;
-  padding:70px 24px 50px;
+  background:#fff;
+  border-radius:24px;
+  padding:48px 34px;
   text-align:center;
+  box-shadow:0 12px 36px rgba(40,60,90,.10);
 }
 .hero h1{
+  margin:0 0 18px;
   font-size:32px;
   line-height:1.4;
-  margin:0 0 18px;
 }
 .hero p{
-  font-size:16px;
-  line-height:1.8;
-  color:#555;
-  margin:0 auto 20px;
   max-width:680px;
-}
-.section{
-  max-width:960px;
   margin:0 auto;
-  padding:20px 24px 60px;
+  font-size:16px;
+  line-height:1.9;
+  color:#555;
 }
-.grid{
+.cards{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:20px;
+  gap:22px;
+  margin-top:28px;
 }
 .card{
   background:#fff;
-  border-radius:18px;
-  padding:24px;
-  box-shadow:0 8px 24px rgba(30,50,80,.08);
+  border-radius:20px;
+  padding:26px;
+  box-shadow:0 8px 24px rgba(40,60,90,.08);
 }
-.card h3{
+.card h2{
   font-size:18px;
-  margin:0 0 10px;
+  margin:0 0 12px;
 }
 .card p{
   font-size:14px;
-  line-height:1.7;
+  line-height:1.8;
   color:#666;
   margin:0;
 }
 .footer{
   text-align:center;
-  padding:28px 20px;
+  padding:30px 20px;
   font-size:12px;
   color:#888;
   background:#fff;
 }
-@media(max-width:720px){
-  .hero{
-    padding:52px 20px 36px;
-  }
-  .hero h1{
-    font-size:25px;
-  }
-  .grid{
-    grid-template-columns:1fr;
-  }
+@media(max-width:760px){
+  .main{padding:42px 18px}
+  .hero{padding:38px 24px}
+  .hero h1{font-size:25px}
+  .cards{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="logo">Service Guide</div>
+  <div class="logo">Information Guide</div>
 </header>
 
-<main>
+<main class="main">
   <section class="hero">
-    <h1>暮らしをもっと便利に、わかりやすく。</h1>
+    <h1>必要な情報を、見やすく整理しました。</h1>
     <p>
-      このページでは、サービスの内容やご利用方法についてご案内しています。
-      必要な情報をわかりやすく整理し、快適にご確認いただけるよう設計されています。
+      このページでは、サービスの内容やお知らせをわかりやすく掲載しています。
+      スマートフォンやパソコンから、快適に内容をご確認いただけます。
     </p>
   </section>
 
-  <section class="section">
-    <div class="grid">
-      <div class="card">
-        <h3>わかりやすい案内</h3>
-        <p>必要な情報を整理し、初めての方にも見やすい構成で掲載しています。</p>
-      </div>
-      <div class="card">
-        <h3>スマートフォン対応</h3>
-        <p>スマートフォン、タブレット、パソコンなど、さまざまな画面で快適に表示できます。</p>
-      </div>
-      <div class="card">
-        <h3>シンプルな操作</h3>
-        <p>余計な機能を減らし、目的の情報へスムーズに進めるようにしています。</p>
-      </div>
+  <section class="cards">
+    <div class="card">
+      <h2>見やすい構成</h2>
+      <p>重要な内容を整理し、はじめての方にもわかりやすいページ構成にしています。</p>
+    </div>
+
+    <div class="card">
+      <h2>快適な表示</h2>
+      <p>スマートフォン、タブレット、パソコンなど、さまざまな画面サイズに対応しています。</p>
+    </div>
+
+    <div class="card">
+      <h2>シンプルな内容</h2>
+      <p>余計な動作を入れず、必要な情報を落ち着いて確認できるようにしています。</p>
     </div>
   </section>
 </main>
 
 <footer class="footer">
-  © 2026 Service Guide. All rights reserved.
+  © 2026 Information Guide. All rights reserved.
 </footer>
 
 </body>
